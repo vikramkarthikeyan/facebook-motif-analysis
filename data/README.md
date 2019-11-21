@@ -1,0 +1,1 @@
+The data files are extracted and stored locally. Facebook100 dataset. 
