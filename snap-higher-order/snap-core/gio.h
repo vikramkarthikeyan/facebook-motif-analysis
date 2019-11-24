@@ -14,7 +14,7 @@ const TStr FLT_TYPE_PREFIX = ("Flt");
 const TStr STR_TYPE_PREFIX = ("Str");
 const TStr NULL_VAL = ("__null__");
 
-void LoadNodeAttributes(const TStr& InFNm, const int& SrcColId=0, const int& DstColId=2);
+template <class PGraph> void LoadNodeAttributes(const TStr& InFNm, const int& SrcColId=0, const int& DstColId=1);
 /// Loads a (directed, undirected or multi) graph from a text file InFNm with 1 edge per line (whitespace separated columns, integer node ids).
 template <class PGraph> PGraph LoadEdgeList(const TStr& InFNm, const int& SrcColId=0, const int& DstColId=1);
 /// Loads a (directed, undirected or multi) graph from a text file InFNm with 1 edge per line ('Separator' separated columns, integer node ids).
@@ -42,7 +42,6 @@ TVec<PNGraph> LoadDyNetGraphV(const TStr& FNm);
 //TODO: Load from a GML file format (http://en.wikipedia.org/wiki/Graph_Modelling_Language)
 //template <class PGraph> PGraph LoadGml(const TStr& FNm, const int Thresh);
 
-void LoadNodeAttributes(const TStr& InFNm, const int& SrcColId=0, const int& DstColId=2);
 /// Saves a graph into a text file. Each line contains two columns and encodes a single edge: <source node id><tab><destination node id>
 template <class PGraph> void SaveEdgeList(const PGraph& Graph, const TStr& OutFNm, const TStr& Desc=TStr());
 /// Saves a network into a text file. Each line encodes either an edge or a node, along with its attributes.
@@ -67,6 +66,19 @@ template<class PGraph> void SaveGViz(const PGraph& Graph, const TStr& OutFNm, co
 
 /////////////////////////////////////////////////
 // Implementation
+//
+
+template <class PGraph>
+void LoadNodeAttributes(const TStr& InFNm, const int& SrcColId, const int& DstColId) {
+  TSsParser Ss(InFNm, ssfWhiteSep, true, true, true);
+  int NodeId, GenderId;
+
+  while(Ss.Next()) {
+    if (! Ss.GetInt(SrcColId, NodeId) || ! Ss.GetInt(DstColId, GenderId)) { continue; }
+    printf("Found node", NodeId, GenderId);
+  }
+
+}
 
 /// Loads the format saved by TSnap::SaveEdgeList() ##LoadEdgeList
 template <class PGraph>
