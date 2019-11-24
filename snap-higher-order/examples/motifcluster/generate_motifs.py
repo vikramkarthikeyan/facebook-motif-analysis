@@ -17,7 +17,7 @@ def generate_motifs(univ):
     os.system("./motifclustermain -i:" + edgelist_file + " -m:M4 -n:" + nodelist_file)
     
 
-for univ in univs:
+for univ in univs[:1]:
     generate_motifs(univ)
 
 # ./motifclustermain -i:../../../data/UCSD34/UCSD34.edgelist -m:M4 -n:../../../data/UCSD34/UCSD34.nodelist 

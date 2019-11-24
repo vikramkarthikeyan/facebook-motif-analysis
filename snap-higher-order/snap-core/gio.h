@@ -75,7 +75,9 @@ void LoadNodeAttributes(const TStr& InFNm, const int& SrcColId, const int& DstCo
 
   while(Ss.Next()) {
     if (! Ss.GetInt(SrcColId, NodeId) || ! Ss.GetInt(DstColId, GenderId)) { continue; }
-    printf("Found node", NodeId, GenderId);
+    // Write logic to populate NodeId->Gender Map
+    //
+
   }
 
 }
