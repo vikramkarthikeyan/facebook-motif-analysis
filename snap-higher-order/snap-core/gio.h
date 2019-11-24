@@ -84,6 +84,17 @@ PGraph LoadEdgeList(const TStr& InFNm, const int& SrcColId, const int& DstColId)
   return Graph;
 }
 
+void LoadNodeAttributes(const TStr& InFNm, const int& SrcColId, const int& DstColId) {
+  TSsParser Ss(InFNm, ssfWhiteSep, true, true, true);
+  int NodeId, GenderId;
+
+  while(Ss.Next()) {
+    if (! Ss.GetInt(SrcColId, NodeId) || ! Ss.GetInt(DstColId, GenderId)) { continue; }
+    printf("Found node", NodeId, GenderId);
+  }
+  
+}
+
 /// Loads the format saved by TSnap::SaveEdgeList() if we set Separator='\t'. ##LoadEdgeList_Separator
 template <class PGraph>
 PGraph LoadEdgeList(const TStr& InFNm, const int& SrcColId, const int& DstColId, const char& Separator) {

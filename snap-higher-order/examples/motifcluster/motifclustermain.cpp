@@ -12,6 +12,9 @@ int main(int argc, char* argv[]) {
   const TStr graph_filename =
     Env.GetIfArgPrefixStr("-i:", "../as20graph.txt",
 			  "Input directed graph file");
+   const TStr node_filename =
+    Env.GetIfArgPrefixStr("-n:", "../default.ngraph",
+			  "Input node file");
   const TStr motif =
     Env.GetIfArgPrefixStr("-m:", "M4", "Motif type");
 
@@ -32,6 +35,12 @@ int main(int argc, char* argv[]) {
   } else {
     graph = TSnap::LoadEdgeList<PNGraph>(graph_filename, 0, 1);
   }
+
+  // Get Node genders
+  if (node_filename.GetFExt().GetLc() == ".nodelist") {
+    TSnap::LoadNodeAttributes(node_filename, 0, 2);
+  }
+
   
   TSweepCut sc;
   MotifCluster::GetMotifCluster(graph, mt, sc);
