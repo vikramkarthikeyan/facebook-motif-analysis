@@ -14,6 +14,7 @@ const TStr FLT_TYPE_PREFIX = ("Flt");
 const TStr STR_TYPE_PREFIX = ("Str");
 const TStr NULL_VAL = ("__null__");
 
+void LoadNodeAttributes(const TStr& InFNm, const int& SrcColId=0, const int& DstColId=2);
 /// Loads a (directed, undirected or multi) graph from a text file InFNm with 1 edge per line (whitespace separated columns, integer node ids).
 template <class PGraph> PGraph LoadEdgeList(const TStr& InFNm, const int& SrcColId=0, const int& DstColId=1);
 /// Loads a (directed, undirected or multi) graph from a text file InFNm with 1 edge per line ('Separator' separated columns, integer node ids).
