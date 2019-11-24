@@ -14,7 +14,7 @@ univs = ["American75","Bowdoin47","Cornell5","Haverford76","Maine59","Notre Dame
 def generate_motifs(univ):
     edgelist_file = "../../../data/" + univ + "/" + univ + "_bidirectional.edgelist"
     nodelist_file = "../../../data/" + univ + "/" + univ + ".nodelist"
-    os.system("./motifclustermain -i:" + edgelist_file + "-m:M4 -n:" + nodelist_file)
+    os.system("./motifclustermain -i:" + edgelist_file + " -m:M4 -n:" + nodelist_file)
     
 
 for univ in univs:
