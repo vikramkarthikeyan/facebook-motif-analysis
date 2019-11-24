@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
     Env.GetIfArgPrefixStr("-m:", "M4", "Motif type");
 
   TStr base_name = ("./" + graph_filename).RightOfLast('/').LeftOfLast('.');
-  TStr default_output_filename = base_name + "-" + motif + "-cluster.txt";
+  TStr default_output_filename = "output/" + base_name + "-" + motif + "-cluster.txt";
   const TStr output_filename =
     Env.GetIfArgPrefixStr("-o:", default_output_filename,
 			  "Cluster output file");
