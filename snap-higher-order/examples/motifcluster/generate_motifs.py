@@ -1,4 +1,5 @@
 import os
+import subprocess
 import pandas as pd
 
 univs = ["American75","Bowdoin47","Cornell5","Haverford76","Maine59","Notre Dame57","Rochester38","Tennessee95","UCF52","UIllinois20","Vassar85","Williams40",
@@ -11,11 +12,14 @@ univs = ["American75","Bowdoin47","Cornell5","Haverford76","Maine59","Notre Dame
 "Berkeley13","Colgate88","Hamilton46","MSU24","Northeastern19","Reed98","Syracuse56","UC61","UF21","UVA16","Wesleyan43",
 "Bingham82","Columbia2","Harvard1","MU78","Northwestern25","Rice31","Temple83","UC64","UGA50","Vanderbilt48","William77"]
 
-result = {}
+result = []
 
 def generate_motifs(univ):
+    temp_dict = {}
+
     edgelist_file = "../../../data/" + univ + "/" + univ + "_bidirectional.edgelist"
     nodelist_file = "../../../data/" + univ + "/" + univ + ".nodelist"
+    command = "./motifclustermain -i:" + edgelist_file + " -m:M4 -n:" + nodelist_file
     
     nodes = pd.read_csv(nodelist_file, delimiter="\t")
     total_nodes = len(nodes)
@@ -23,22 +27,26 @@ def generate_motifs(univ):
     female_nodes = len(nodes[nodes["gender"] == 2])
     unknown_nodes = len(nodes[nodes["gender"] == 0])
 
-    print("University: ",univ)
-    print("Total nodes: ",total_nodes)
-    print("Male nodes: ",male_nodes)
-    print("Female nodes: ",female_nodes)
-    print("Unknown nodes: ",unknown_nodes)
+    temp_dict["University"] = univ
+    temp_dict["Node count"] = total_nodes
+    temp_dict["Male node count"] = male_nodes
+    temp_dict["Female node count"] = female_nodes
+    temp_dict["Unknown node count"] = unknown_nodes
 
     edge_count = 0
     with open(edgelist_file, "r") as f:
         edge_count = len(f.readlines())
 
-    print("Number of edges: ", edge_count)
+    temp_dict["Edge count"] = edge_count
 
-    os.system("./motifclustermain -i:" + edgelist_file + " -m:M4 -n:" + nodelist_file)
+    arch = subprocess.check_output(command, shell=True)
+    print(arch)
+
+    return temp_dict
     
 
 for univ in univs[:4]:
-    generate_motifs(univ)
+    univ_result = generate_motifs(univ)
+    result.append(univ_result)
 
 # ./motifclustermain -i:../../../data/UCSD34/UCSD34.edgelist -m:M4 -n:../../../data/UCSD34/UCSD34.nodelist 
