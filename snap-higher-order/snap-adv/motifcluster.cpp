@@ -326,13 +326,19 @@ void MotifCluster::TriangleMotifAdjacency(PNGraph graph, MotifType motif,
             motif_occurs = IsMotifM3(graph, src, dst1, dst2);
             break;
           case M4:
-            auto search = NodeGenderMap.find(src);
-            if(search != NodeGenderMap.end()) {
-              printf("Found %d:%d", search->first, search->second);
+	    {
+	    std::map<int, int>::iterator it = NodeGenderMap.find(src);
+            if(it != NodeGenderMap.end()) {
+              if(it->second == 1) {
+	      	countMale++;
+	      } else if(it->second == 2) {
+	      	countFemale++;
+	      }	      
             }
             motif_occurs = IsMotifM4(graph, src, dst1, dst2);
             motifCount++;
             break;
+	    }
           case M5:
             motif_occurs = IsMotifM5(graph, src, dst1, dst2);
             break;
