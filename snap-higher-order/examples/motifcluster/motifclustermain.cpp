@@ -1,5 +1,6 @@
 // motifcluster.cpp : Defines the entry point for the console application.
 //
+#include <map>
 #include "stdafx.h"
 #include "motifcluster.h"
 
@@ -36,12 +37,14 @@ int main(int argc, char* argv[]) {
     graph = TSnap::LoadEdgeList<PNGraph>(graph_filename, 0, 1);
   }
 
+  // Initialize Node_Gender map
+  std::map<int, int> NodeGenderMap;
+
   // Get Node genders
   if (node_filename.GetFExt().GetLc() == ".nodelist") {
-    TSnap::LoadNodeAttributes<PNGraph>(node_filename, 0, 2);
+    TSnap::LoadNodeAttributes<PNGraph>(node_filename, NodeGenderMap, 0, 2);
   }
 
-  
   TSweepCut sc;
   MotifCluster::GetMotifCluster(graph, mt, sc);
 

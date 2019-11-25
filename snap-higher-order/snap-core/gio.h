@@ -1,3 +1,5 @@
+#include <map>
+
 /////////////////////////////////////////////////
 // Loading and saving graphs from/to various file formats.
 namespace TSnap {
@@ -14,7 +16,7 @@ const TStr FLT_TYPE_PREFIX = ("Flt");
 const TStr STR_TYPE_PREFIX = ("Str");
 const TStr NULL_VAL = ("__null__");
 
-template <class PGraph> void LoadNodeAttributes(const TStr& InFNm, const int& SrcColId=0, const int& DstColId=1);
+template <class PGraph> void LoadNodeAttributes(const TStr& InFNm, std::map<int, int> &NodeMap, const int& SrcColId=0, const int& DstColId=1);
 /// Loads a (directed, undirected or multi) graph from a text file InFNm with 1 edge per line (whitespace separated columns, integer node ids).
 template <class PGraph> PGraph LoadEdgeList(const TStr& InFNm, const int& SrcColId=0, const int& DstColId=1);
 /// Loads a (directed, undirected or multi) graph from a text file InFNm with 1 edge per line ('Separator' separated columns, integer node ids).
@@ -69,14 +71,15 @@ template<class PGraph> void SaveGViz(const PGraph& Graph, const TStr& OutFNm, co
 //
 
 template <class PGraph>
-void LoadNodeAttributes(const TStr& InFNm, const int& SrcColId, const int& DstColId) {
+void LoadNodeAttributes(const TStr& InFNm, std::map<int, int> &NodeMap, const int& SrcColId, const int& DstColId) {
   TSsParser Ss(InFNm, ssfWhiteSep, true, true, true);
   int NodeId, GenderId;
 
   while(Ss.Next()) {
     if (! Ss.GetInt(SrcColId, NodeId) || ! Ss.GetInt(DstColId, GenderId)) { continue; }
+    
     // Write logic to populate NodeId->Gender Map
-    //
+    NodeMap.insert(*(new std::pair<int, int>(NodeId, GenderId)));
 
   }
 
