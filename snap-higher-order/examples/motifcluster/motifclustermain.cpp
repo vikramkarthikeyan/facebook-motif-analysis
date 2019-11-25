@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
   }
 
   TSweepCut sc;
-  MotifCluster::GetMotifCluster(graph, mt, sc);
+  MotifCluster::GetMotifCluster(graph, mt, sc, NodeGenderMap);
 
   printf("Largest CC size: %d\n", sc.conn_components[sc.lcc_index].Len());
   printf("Cluster size: %d\n", sc.cluster.Len());

@@ -1,3 +1,4 @@
+#include <map>
 #include "stdafx.h"
 #include "motifcluster.h"
 
@@ -213,7 +214,6 @@ void MotifCluster::DegreeOrdering(PNGraph graph, TIntV& order) {
 void MotifCluster::TriangleMotifAdjacency(PNGraph graph, MotifType motif,
                                           WeightVH& weights) {
   TIntV order;
-  // printf("YO!!!!");
   DegreeOrdering(graph, order);
   int motifCount = 0;
   for (TNGraph::TNodeI NI = graph->BegNI(); NI < graph->EndNI(); NI++) {
@@ -253,6 +253,79 @@ void MotifCluster::TriangleMotifAdjacency(PNGraph graph, MotifType motif,
             motif_occurs = IsMotifM3(graph, src, dst1, dst2);
             break;
           case M4:
+            motif_occurs = IsMotifM4(graph, src, dst1, dst2);
+            
+            motifCount++;
+            break;
+          case M5:
+            motif_occurs = IsMotifM5(graph, src, dst1, dst2);
+            break;
+          case M6:
+            motif_occurs = IsMotifM6(graph, src, dst1, dst2);
+            break;
+          case M7:
+            motif_occurs = IsMotifM7(graph, src, dst1, dst2);
+            break;
+          default:
+            TExcept::Throw("Unknown directed triangle motif");
+          }
+          // Increment weights of the triad (src, dst1, dst2) if it occurs.
+          if (motif_occurs) {
+            IncrementWeight(src,  dst1, weights);
+            IncrementWeight(src,  dst2, weights);
+            IncrementWeight(dst1, dst2, weights);
+          }
+        }
+      }
+    }
+  }
+  printf("Number of motifs: %d\n", motifCount);
+}
+
+void MotifCluster::TriangleMotifAdjacency(PNGraph graph, MotifType motif,
+                                          WeightVH& weights, std::map<int, int> &NodeGenderMap) {
+  TIntV order;
+  DegreeOrdering(graph, order);
+  int motifCount = 0;
+  for (TNGraph::TNodeI NI = graph->BegNI(); NI < graph->EndNI(); NI++) {
+    int src = NI.GetId();
+    int src_pos = order[src];
+    
+    // Get all neighbors who come later in the ordering
+    TIntV neighbors_higher;
+    for (int i = 0; i < NI.GetOutDeg(); i++) {
+      int nbr = NI.GetOutNId(i);
+      if (order[nbr] > src_pos) {
+        neighbors_higher.Add(nbr);
+      }
+    }
+    for (int i = 0; i < NI.GetInDeg(); i++) {
+      int nbr = NI.GetInNId(i);
+      if (!NI.IsOutNId(nbr) && order[nbr] > src_pos) {
+        neighbors_higher.Add(nbr);
+      }
+    }
+
+    for (int ind1 = 0; ind1 < neighbors_higher.Len(); ind1++) {
+      for (int ind2 = ind1 + 1; ind2 < neighbors_higher.Len(); ind2++) {
+        int dst1 = neighbors_higher[ind1];
+        int dst2 = neighbors_higher[ind2];
+        // Check for triangle formation
+        if (graph->IsEdge(dst1, dst2) || graph->IsEdge(dst2, dst1)) {
+          bool motif_occurs = false;
+          switch (motif) {
+          case M1:
+            motif_occurs = IsMotifM1(graph, src, dst1, dst2);
+            break;
+          case M2:
+            motif_occurs = IsMotifM2(graph, src, dst1, dst2);
+            break;
+          case M3:
+            motif_occurs = IsMotifM3(graph, src, dst1, dst2);
+            break;
+          case M4:
+            int countMale = 0;
+            int countFemale = 0;
             motif_occurs = IsMotifM4(graph, src, dst1, dst2);
             motifCount++;
             break;
@@ -504,6 +577,38 @@ void MotifCluster::MotifAdjacency(PNGraph graph, MotifType motif,
   }
 }
 
+void MotifCluster::MotifAdjacency(PNGraph graph, MotifType motif,
+				  WeightVH& weights, std::map<int, int> &NodeGenderMap) {
+  weights = WeightVH(graph->GetMxNId());
+  switch (motif) {
+  case M1:
+  case M2:
+  case M3:
+  case M4:
+  case M5:
+  case M6:
+  case M7:
+    TriangleMotifAdjacency(graph, motif, weights, NodeGenderMap);
+    break;
+  case M8:
+  case M9:
+  case M10:
+  case M11:
+  case M12:
+  case M13:
+    WedgeMotifAdjacency(graph, motif, weights);
+    break;    
+  case bifan:
+    BifanMotifAdjacency(graph, weights);
+    break;
+  case edge:
+    EdgeMotifAdjacency(graph, weights);
+    break;
+  default:
+    TExcept::Throw("Unknown directed motif type");
+  }
+}
+
 void MotifCluster::CliqueMotifAdjacency(PUNGraph graph, int clique_size,
                                         WeightVH& weights) {
   ChibaNishizekiWeighter cnw(graph);
@@ -733,6 +838,16 @@ void MotifCluster::GetMotifCluster(PUNGraph graph, MotifType motif,
 				   int maxiter) {
   WeightVH weights;
   MotifAdjacency(graph, motif, weights);
+  TBoolV valid_nodes;
+  ValidNodes(graph, valid_nodes);  
+  SpectralCut(weights, sweepcut, valid_nodes, tol, maxiter);
+}
+
+void MotifCluster::GetMotifCluster(PNGraph graph, MotifType motif,
+				   TSweepCut& sweepcut, std::map<int, int> &NodeGenderMap, double tol,
+				   int maxiter) {
+  WeightVH weights;
+  MotifAdjacency(graph, motif, weights, NodeGenderMap);
   TBoolV valid_nodes;
   ValidNodes(graph, valid_nodes);  
   SpectralCut(weights, sweepcut, valid_nodes, tol, maxiter);

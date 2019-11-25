@@ -1,3 +1,4 @@
+#include <map>
 #ifndef snap_motifcluster_h
 #define snap_motifcluster_h
 #include "Snap.h"
@@ -67,6 +68,9 @@ class MotifCluster {
   static void GetMotifCluster(PUNGraph graph, MotifType motif,
 			      TSweepCut& sweepcut, double tol=kDefaultTol,
 			      int maxiter=kMaxIter);  
+  static void GetMotifCluster(PNGraph graph, MotifType motif,
+			      TSweepCut& sweepcut, std::map<int, int> &NodeGenderMap, double tol=kDefaultTol,
+			      int maxiter=kMaxIter);  
 
   // For a given graph, fill the weights vector with the weights in the motif
   // adjacency matrix.  Specifically, weights[i][j] is the number of times i and
@@ -74,6 +78,7 @@ class MotifCluster {
   // lower triangular part of the matrix).
   static void MotifAdjacency(PNGraph graph, MotifType motif, WeightVH& weights);
   static void MotifAdjacency(PUNGraph graph, MotifType motif, WeightVH& weights);
+  static void MotifAdjacency(PNGraph graph, MotifType motif, WeightVH& weights, std::map<int, int> &NodeGenderMap);
   
   // Given a weighted network, compute a cut of the graph using the Fiedler
   // vector and a sweep cut.  Results are stored in the sweepcut data structure.
@@ -142,6 +147,9 @@ class MotifCluster {
   // Handles MotifAdjacency() functionality for directed triangle motifs.
   static void TriangleMotifAdjacency(PNGraph graph, MotifType motif,
                               WeightVH& weights);
+  
+  static void TriangleMotifAdjacency(PNGraph graph, MotifType motif,
+                              WeightVH& weights, std::map<int, int> &NodeGenderMap);
 
   // Handles MotifAdjacency() functionality for directed wedges.
   static void WedgeMotifAdjacency(PNGraph graph, MotifType motif,
