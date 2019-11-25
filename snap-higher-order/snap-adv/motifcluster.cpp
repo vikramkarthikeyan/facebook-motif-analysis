@@ -286,7 +286,14 @@ void MotifCluster::TriangleMotifAdjacency(PNGraph graph, MotifType motif,
                                           WeightVH& weights, std::map<int, int> &NodeGenderMap) {
   TIntV order;
   DegreeOrdering(graph, order);
+
   int motifCount = 0;
+  int MMMCount = 0;
+  int MMFCount = 0;
+  int FFMCount = 0;
+  int FFFCount = 0;
+  int UUUCount = 0;
+
   for (TNGraph::TNodeI NI = graph->BegNI(); NI < graph->EndNI(); NI++) {
     int src = NI.GetId();
     int src_pos = order[src];
@@ -326,19 +333,71 @@ void MotifCluster::TriangleMotifAdjacency(PNGraph graph, MotifType motif,
             motif_occurs = IsMotifM3(graph, src, dst1, dst2);
             break;
           case M4:
-	    {
-	    std::map<int, int>::iterator it = NodeGenderMap.find(src);
-            if(it != NodeGenderMap.end()) {
-              if(it->second == 1) {
-	      	countMale++;
-	      } else if(it->second == 2) {
-	      	countFemale++;
-	      }	      
+            {
+              motif_occurs = IsMotifM4(graph, src, dst1, dst2);
+
+              if(motif_occurs) {
+                motifCount++;
+
+                // Increment gender count for src
+                std::map<int, int>::iterator it = NodeGenderMap.find(src);
+                if(it != NodeGenderMap.end()) {
+                  if(it->second == 1) {
+                    countMale++;
+                  } else if(it->second == 2) {
+                    countFemale++;
+                  }	      
+                }
+
+                // Increment gender count for dst1
+                it = NodeGenderMap.find(dst1);
+                if(it != NodeGenderMap.end()) {
+                  if(it->second == 1) {
+                    countMale++;
+                  } else if(it->second == 2) {
+                    countFemale++;
+                  }	      
+                }
+
+                // Increment gender count for dst2
+                it = NodeGenderMap.find(dst2);
+                if(it != NodeGenderMap.end()) {
+                  if(it->second == 1) {
+                    countMale++;
+                  } else if(it->second == 2) {
+                    countFemale++;
+                  }	      
+                }
+
+                // Increment appropriate motif type count
+                // MMM
+                if(countMale == 3) {
+                  MMMCount++;
+                }
+
+                // MMF
+                if(countFemale == 1 && countMale == 2) {
+                  MMFCount++;
+                }
+
+                // FFM
+                if(countFemale == 2 && countMale == 1) {
+                  FFMCount++;
+                }
+
+                // FFF
+                if(countFemale == 3) {
+                  FFFCount++;
+                }
+
+                // UUU
+                if(countFemale == 0 && countMale == 0) {
+                  UUUCount++;
+                }
+                
+              }
+              break;
             }
-            motif_occurs = IsMotifM4(graph, src, dst1, dst2);
-            motifCount++;
-            break;
-	    }
           case M5:
             motif_occurs = IsMotifM5(graph, src, dst1, dst2);
             break;
@@ -362,6 +421,11 @@ void MotifCluster::TriangleMotifAdjacency(PNGraph graph, MotifType motif,
     }
   }
   printf("Number of motifs: %d\n", motifCount);
+  printf("Number of MMM motifs: %d\n", MMMCount);
+  printf("Number of FFF motifs: %d\n", FFFCount);
+  printf("Number of MMF motifs: %d\n", MMFCount);
+  printf("Number of FFM motifs: %d\n", FFMCount);
+  printf("Number of UUU motifs: %d\n", UUUCount);
 }
 
 /////////////////////////////////////////////////
