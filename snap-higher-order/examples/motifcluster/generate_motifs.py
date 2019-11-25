@@ -19,7 +19,7 @@ def generate_motifs(univ):
 
     edgelist_file = "../../../data/" + univ + "/" + univ + "_bidirectional.edgelist"
     nodelist_file = "../../../data/" + univ + "/" + univ + ".nodelist"
-    command = "./motifclustermain -i:" + edgelist_file + " -m:M4 -n:" + nodelist_file
+    command = "./motifclustermain -i:\"" + edgelist_file + "\" -m:M4 -n:\"" + nodelist_file + "\""
     
     nodes = pd.read_csv(nodelist_file, delimiter="\t")
     total_nodes = len(nodes)
@@ -40,7 +40,7 @@ def generate_motifs(univ):
     temp_dict["Edge count"] = edge_count
 
     output = subprocess.check_output(command, shell=True)
-    #print(arch)
+    print(output)
     for line in output.split("\n"):
         if "Number of" in line:
             line_split = line.split(":")
@@ -49,7 +49,7 @@ def generate_motifs(univ):
     return temp_dict
     
 
-for univ in univs[:1000]:
+for univ in univs:
     univ_result = generate_motifs(univ)
     print(univ_result)
     result.append(univ_result)
