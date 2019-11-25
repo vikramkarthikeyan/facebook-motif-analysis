@@ -313,6 +313,8 @@ void MotifCluster::TriangleMotifAdjacency(PNGraph graph, MotifType motif,
         // Check for triangle formation
         if (graph->IsEdge(dst1, dst2) || graph->IsEdge(dst2, dst1)) {
           bool motif_occurs = false;
+          int countMale = 0;
+          int countFemale = 0;
           switch (motif) {
           case M1:
             motif_occurs = IsMotifM1(graph, src, dst1, dst2);
@@ -324,8 +326,10 @@ void MotifCluster::TriangleMotifAdjacency(PNGraph graph, MotifType motif,
             motif_occurs = IsMotifM3(graph, src, dst1, dst2);
             break;
           case M4:
-            int countMale = 0;
-            int countFemale = 0;
+            auto search = NodeGenderMap.find(src);
+            if(search != NodeGenderMap.end()) {
+              printf("Found %d:%d", search->first, search->second);
+            }
             motif_occurs = IsMotifM4(graph, src, dst1, dst2);
             motifCount++;
             break;
