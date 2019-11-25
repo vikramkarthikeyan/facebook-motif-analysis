@@ -39,14 +39,24 @@ def generate_motifs(univ):
 
     temp_dict["Edge count"] = edge_count
 
-    arch = subprocess.check_output(command, shell=True)
-    print(arch)
+    output = subprocess.check_output(command, shell=True)
+    #print(arch)
+    for line in output.split("\n"):
+        if "Number of" in line:
+            line_split = line.split(":")
+            temp_dict[line_split[0]] = int(line_split[1])
 
     return temp_dict
     
 
-for univ in univs[:4]:
+for univ in univs[:1000]:
     univ_result = generate_motifs(univ)
+    print(univ_result)
     result.append(univ_result)
+
+final_df = pd.DataFrame(result, columns=["University", "Node count", "Edge count", "Male node count", "Female node count", "Unknown node count", "Number of motifs", "Number of MMM motifs", 
+    "Number of FFF motifs", "Number of MMF motifs", "Number of FFM motifs", "Number of UUU motifs"])
+final_df.to_csv("../../../motif_results.csv")
+
 
 # ./motifclustermain -i:../../../data/UCSD34/UCSD34.edgelist -m:M4 -n:../../../data/UCSD34/UCSD34.nodelist 
