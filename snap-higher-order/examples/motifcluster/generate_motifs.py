@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 
 univs = ["American75","Bowdoin47","Cornell5","Haverford76","Maine59","Notre Dame57","Rochester38","Tennessee95","UCF52","UIllinois20","Vassar85","Williams40",
 "Amherst41","Brandeis99","Dartmouth6","Howard90","Maryland58","Oberlin44","Rutgers89","Texas80","UCLA26","UMass92","Vermont70","Wisconsin87",
@@ -10,14 +11,34 @@ univs = ["American75","Bowdoin47","Cornell5","Haverford76","Maine59","Notre Dame
 "Berkeley13","Colgate88","Hamilton46","MSU24","Northeastern19","Reed98","Syracuse56","UC61","UF21","UVA16","Wesleyan43",
 "Bingham82","Columbia2","Harvard1","MU78","Northwestern25","Rice31","Temple83","UC64","UGA50","Vanderbilt48","William77"]
 
+result = {}
 
 def generate_motifs(univ):
     edgelist_file = "../../../data/" + univ + "/" + univ + "_bidirectional.edgelist"
     nodelist_file = "../../../data/" + univ + "/" + univ + ".nodelist"
+    
+    nodes = pd.read_csv(nodelist_file, delimiter="\t")
+    total_nodes = len(nodes)
+    male_nodes = len(nodes[nodes["gender"] == 1])
+    female_nodes = len(nodes[nodes["gender"] == 2])
+    unknown_nodes = len(nodes[nodes["gender"] == 0])
+
+    print("University: ",univ)
+    print("Total nodes: ",total_nodes)
+    print("Male nodes: ",male_nodes)
+    print("Female nodes: ",female_nodes)
+    print("Unknown nodes: ",unknown_nodes)
+
+    edge_count = 0
+    with open(edgelist_file, "r") as f:
+        edge_count = len(f.readlines())
+
+    print("Number of edges: ", edge_count)
+
     os.system("./motifclustermain -i:" + edgelist_file + " -m:M4 -n:" + nodelist_file)
     
 
-for univ in univs[:1]:
+for univ in univs[:4]:
     generate_motifs(univ)
 
 # ./motifclustermain -i:../../../data/UCSD34/UCSD34.edgelist -m:M4 -n:../../../data/UCSD34/UCSD34.nodelist 
