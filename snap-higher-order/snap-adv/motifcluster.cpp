@@ -282,6 +282,7 @@ void MotifCluster::TriangleMotifAdjacency(PNGraph graph, MotifType motif,
   printf("Number of motifs: %d\n", motifCount);
 }
 
+// GENDERMOTIFCHANGES: Triangle M4 Motif counting with node gender map
 void MotifCluster::TriangleMotifAdjacency(PNGraph graph, MotifType motif,
                                           WeightVH& weights, std::map<int, int> &NodeGenderMap) {
   TIntV order;
@@ -651,6 +652,7 @@ void MotifCluster::MotifAdjacency(PNGraph graph, MotifType motif,
   }
 }
 
+// GENDERMOTIFCHANGES: Added a new function for finding motifs with node attributes 
 void MotifCluster::MotifAdjacency(PNGraph graph, MotifType motif,
 				  WeightVH& weights, std::map<int, int> &NodeGenderMap) {
   weights = WeightVH(graph->GetMxNId());

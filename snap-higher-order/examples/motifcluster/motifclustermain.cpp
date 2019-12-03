@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "motifcluster.h"
 
+// GENDERMOTIFCHANGES: Main file to execute to get count of different types of M4 motifs
 int main(int argc, char* argv[]) {
   Env = TEnv(argc, argv, TNotify::StdNotify);
   Env.PrepArgs(TStr::Fmt("Motifs. build: %s, %s. Time: %s",
