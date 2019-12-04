@@ -155,6 +155,10 @@ class MotifCluster {
   static void WedgeMotifAdjacency(PNGraph graph, MotifType motif,
 				  WeightVH& weights);  
 
+   // Handles MotifAdjacency() functionality for directed wedges with node attributes.
+  static void WedgeMotifAdjacency(PNGraph graph, MotifType motif,
+				  WeightVH& weights, std::map<int, int> &NodeGenderMap);  
+
   // Handles MotifAdjacency() functionality for the bifan motif.
   static void BifanMotifAdjacency(PNGraph graph, WeightVH& weights);
 

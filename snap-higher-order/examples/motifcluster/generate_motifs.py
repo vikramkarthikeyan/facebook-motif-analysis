@@ -19,7 +19,7 @@ def generate_motifs(univ):
 
     edgelist_file = "../../../data/" + univ + "/" + univ + "_bidirectional.edgelist"
     nodelist_file = "../../../data/" + univ + "/" + univ + ".nodelist"
-    command = "./motifclustermain -i:\"" + edgelist_file + "\" -m:M4 -n:\"" + nodelist_file + "\""
+    command = "./motifclustermain -i:\"" + edgelist_file + "\" -m:M13 -n:\"" + nodelist_file + "\""
     
     nodes = pd.read_csv(nodelist_file, delimiter="\t")
     total_nodes = len(nodes)
@@ -56,7 +56,7 @@ for univ in univs:
 
 final_df = pd.DataFrame(result, columns=["University", "Node count", "Edge count", "Male node count", "Female node count", "Unknown node count", "Number of motifs", "Number of MMM motifs", 
     "Number of FFF motifs", "Number of MMF motifs", "Number of FFM motifs", "Number of UUU motifs"])
-final_df.to_csv("../../../motif_results.csv")
+final_df.to_csv("../../../motif_results_m13.csv")
 
 
 # ./motifclustermain -i:../../../data/UCSD34/UCSD34.edgelist -m:M4 -n:../../../data/UCSD34/UCSD34.nodelist 

@@ -430,6 +430,140 @@ void MotifCluster::TriangleMotifAdjacency(PNGraph graph, MotifType motif,
 }
 
 /////////////////////////////////////////////////
+// GENDERMOTIFCHANGES: Triangle M13 Motif counting with node gender map
+// Wedge weighting
+void MotifCluster::WedgeMotifAdjacency(PNGraph graph, MotifType motif,
+                                       WeightVH& weights, std::map<int, int> &NodeGenderMap) {
+
+  int motifCount = 0;
+  int MMMCount = 0;
+  int MMFCount = 0;
+  int FFMCount = 0;
+  int FFFCount = 0;
+  int UUUCount = 0;
+
+  for (TNGraph::TNodeI NI = graph->BegNI(); NI < graph->EndNI(); NI++) {
+    int center = NI.GetId();
+    
+    // Get all neighbors
+    TIntV neighbors;
+    for (int i = 0; i < NI.GetOutDeg(); i++) {
+      int nbr = NI.GetOutNId(i);
+      neighbors.Add(nbr);
+    }
+    for (int i = 0; i < NI.GetInDeg(); i++) {
+      int nbr = NI.GetInNId(i);
+      if (!NI.IsOutNId(nbr)) {
+        neighbors.Add(nbr);
+      }
+    }
+
+    for (int ind1 = 0; ind1 < neighbors.Len(); ind1++) {
+      for (int ind2 = ind1 + 1; ind2 < neighbors.Len(); ind2++) {
+        int dst1 = neighbors[ind1];
+        int dst2 = neighbors[ind2];
+        bool motif_occurs = false;
+        int countMale = 0;
+        int countFemale = 0;
+        switch (motif) {
+        case M8:
+          motif_occurs = IsMotifM8(graph, center, dst1, dst2);
+          break;
+        case M9:
+          motif_occurs = IsMotifM9(graph, center, dst1, dst2);
+          break;
+        case M10:
+          motif_occurs = IsMotifM10(graph, center, dst1, dst2);
+          break;
+        case M11:
+          motif_occurs = IsMotifM11(graph, center, dst1, dst2);
+          break;
+        case M12:
+          motif_occurs = IsMotifM12(graph, center, dst1, dst2);
+          break;
+        case M13:
+          motif_occurs = IsMotifM13(graph, center, dst1, dst2);
+          if(motif_occurs) {
+                motifCount++;
+
+                // Increment gender count for src
+                std::map<int, int>::iterator it = NodeGenderMap.find(center);
+                if(it != NodeGenderMap.end()) {
+                  if(it->second == 1) {
+                    countMale++;
+                  } else if(it->second == 2) {
+                    countFemale++;
+                  }	      
+                }
+
+                // Increment gender count for dst1
+                it = NodeGenderMap.find(dst1);
+                if(it != NodeGenderMap.end()) {
+                  if(it->second == 1) {
+                    countMale++;
+                  } else if(it->second == 2) {
+                    countFemale++;
+                  }	      
+                }
+
+                // Increment gender count for dst2
+                it = NodeGenderMap.find(dst2);
+                if(it != NodeGenderMap.end()) {
+                  if(it->second == 1) {
+                    countMale++;
+                  } else if(it->second == 2) {
+                    countFemale++;
+                  }	      
+                }
+
+                // Increment appropriate motif type count
+                // MMM
+                if(countMale == 3) {
+                  MMMCount++;
+                }
+
+                // MMF
+                if(countFemale == 1 && countMale == 2) {
+                  MMFCount++;
+                }
+
+                // FFM
+                if(countFemale == 2 && countMale == 1) {
+                  FFMCount++;
+                }
+
+                // FFF
+                if(countFemale == 3) {
+                  FFFCount++;
+                }
+
+                // UUU
+                if(countFemale == 0 && countMale == 0) {
+                  UUUCount++;
+                }
+                
+              }
+              break;
+        default:
+          TExcept::Throw("Unknown directed wedge motif");
+        }
+        // Increment weights of (center, dst1, dst2) if it occurs.
+        if (motif_occurs) {
+          IncrementWeight(center, dst1, weights);
+          IncrementWeight(center, dst2, weights);
+          IncrementWeight(dst1,   dst2, weights);
+        }
+      }
+    }
+  }
+  printf("Number of motifs: %d\n", motifCount);
+  printf("Number of MMM motifs: %d\n", MMMCount);
+  printf("Number of FFF motifs: %d\n", FFFCount);
+  printf("Number of MMF motifs: %d\n", MMFCount);
+  printf("Number of FFM motifs: %d\n", FFMCount);
+  printf("Number of UUU motifs: %d\n", UUUCount);
+}
+
 // Wedge weighting
 void MotifCluster::WedgeMotifAdjacency(PNGraph graph, MotifType motif,
                                        WeightVH& weights) {
@@ -486,7 +620,6 @@ void MotifCluster::WedgeMotifAdjacency(PNGraph graph, MotifType motif,
     }
   }
 }
-
 
 /////////////////////////////////////////////////
 // Bifan weighting
@@ -672,7 +805,7 @@ void MotifCluster::MotifAdjacency(PNGraph graph, MotifType motif,
   case M11:
   case M12:
   case M13:
-    WedgeMotifAdjacency(graph, motif, weights);
+    WedgeMotifAdjacency(graph, motif, weights, NodeGenderMap);
     break;    
   case bifan:
     BifanMotifAdjacency(graph, weights);
